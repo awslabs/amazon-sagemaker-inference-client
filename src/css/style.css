@@ -1,0 +1,18 @@
+/*!
+* Some minor overrides and additions to the freelamncer.css base file
+*
+*/
+
+.bg-darkgray   {
+    background-color: darkgray  !important;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+  }
+  a:hover {
+    color: #ff9900 ;
+    text-decoration: underline;
+  }

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Sagemaker Inference Client</title>
+
+  <!-- Custom fonts for this theme -->
+
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet"
+    type="text/css">
+
+  <!-- Theme CSS -->
+  <link href="css/freelancer.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top">
+    <div class="container">
+      <div class="pr-4">
+        <a href="https://aws.amazon.com">
+          <img src="https://d0.awsstatic.com/logos/powered-by-aws-white.png" style="width:100px;height:36px;"
+            alt="Powered by AWS Cloud Computing">
+        </a>
+      </div>
+      <h3 class="text-white">Sagemaker Inference Client</h3>
+      <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-darkgray text-white rounded"
+        type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
+        aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#inference">Inference Client</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#quickstart">Quick Start Guide</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Inference Section -->
+  <section class="page-section" id="inference">
+    <div class="container">
+
+      <!-- Row 1 Inputs - Endpoint name and Image Select -->
+      <div class="row">
+        <div class="col-sm-6 input-group mb-1]">
+          <div class="input-group-prepend">
+            <span class="input-group-text mb-1" id="endpoint-name-label">Endpoint Name:</span>
+          </div>
+          <select class="form-control" id="endpoint-name-select" name="endpoint-name-select">
+            <!-- Programatically filled with Sagemaker Endpoints in the selected region. -->
+          </select>
+        </div>
+
+        <div class="col-sm-6 input-group mb-1">
+          <input type="file" class="form-control" accept="image/*" id="image-file-select">
+          <label class="custom-file-label" id="image-file-label" for="image-file-select">Select Inference Image</label>
+        </div>
+      </div>
+      <!-- /.Row 1 Inputs-->
+
+      <!-- Row 2 Inputs - Threshold and Submit Inference -->
+      <div class="row">
+        <div class="col-sm-6 input-group mb-2">
+          <label id="threshold-range-label" for="formControlRange">Confidence Threshold: TBA</label>
+          <input type="range" class="form-control-range" min="1" max="100" step="1" value="75" data-toggle="tooltip"
+            data-placement="bottom"
+            title="Set the confidence threshold required to show the box-bounding in the selected image."
+           id="threshold-range">
+        </div>
+
+        <div class="col-sm-4 mb-2">
+
+          <div class="form-group row">
+            <label class="col-sm-2 control-label" for="doc_type">Region:</label>
+            <div class="col">
+              <select class="form-control" id="region-select" name="region-select">
+                <option value="us-east-1">us-east-1</option>
+                <option value="us-east-2">us-east-2</option>
+                <option value="us-west-1">us-west-1</option>
+                <option value="us-west-2">us-west-2</option>
+                <option value="us-gov-west-1">us-gov-west-1</option>
+                <option value="ap-east-1">ap-east-1</option>
+                <option value="ap-northeast-1">ap-northeast-1</option>
+                <option value="ap-northeast-2">ap-northeast-2</option>
+                <option value="ap-south-1">ap-south-1</option>
+                <option value="ap-southeast-1">ap-southeast-1</option>
+                <option value="ap-southeast-2">ap-southeast-2</option>
+                <option value="ca-central-1">ca-central-1</option>
+                <option value="eu-central-1">eu-central-1</option>
+                <option value="eu-north-1">eu-north-1</option>
+                <option value="eu-west-1">eu-west-1</option>
+                <option value="eu-west-2">eu-west-2</option>
+                <option value="eu-west-3">eu-west-3</option>
+                <option value="sa-east-1">sa-east-1</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-2 mb-2 text-right">
+          <button type="button" class="btn btn-secondary" id="submit-inference">Submit</button>
+
+        </div>
+      </div>
+      <!-- /.Row 2 Inputs-->
+
+      <!-- Row 3: Display Image Inference and Class list-->
+      <div class="row">
+        <div class="col-sm-6 m-0 p-0">
+          <img id="inference-image-display" src="img/car-image-placeholder.jpg" width="100%"/>
+        </div>
+        <!-- Inference Class lists-->
+        <div class="col-sm-6">
+          <div class="row">
+            <div class="col">
+              <p class="lead mb-0">Enter Inference Class List (Optional for labeling):</p>
+            </div>
+          </div>
+          <div class="row" id="inference-class-0-row">
+            <div class="col input-group input-group-sm mb-1">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inference-class-0-label">Class 0:</span>
+              </div>
+              <input type="text" class="form-control" id="inference-class-0" placeholder="Enter Inference Class 0"
+                aria-label="Inference Class 0" aria-describedby="inference-class-0-label">
+            </div>
+          </div>
+          <!-- Inference Class Add / Remove Buttons-->
+          <div class="row" id="inference-class-add-remove">
+            <div class="col text-right">
+              <button type="button" class="btn btn-secondary btn-sm m-2" id="remove-class-input">Remove Class</button>
+              <button type="button" class="btn btn-secondary btn-sm m-2" id="add-class-input">Add Class</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.Row 3 Inference Inages and Classes-->
+
+      <!-- Row 4: Inference Text Output-->
+      <div class="row">
+        <!-- Inference Class Output Updated programatically -->
+        <div class="col" id="inference-text"></div>
+      </div>
+      <!-- /.Row 4 Inference Text Output-->
+
+    </div>
+  </section>
+
+  <!-- Quickstart Section -->
+  <section class="page-section bg-darkgray text-white mb-0" id="quickstart">
+    <div class="container">
+
+      <!-- Quickstart Section Heading -->
+      <h2 class="page-section-heading text-center text-uppercase text-white">Quick Start</h2>
+
+      <!-- Quickstart Section Content -->
+      <div class="row">
+        <div class="col">
+          <p class="lead">ABOUT:</p>
+          <p>This application consumes an Amazon Sagemaker Object-Detection Inference Endpoint API via a Lambda
+            function.
+            It provides both a visual and text output of an object-detection inference model run against a
+            provided image.</p>
+          <p class="lead">Quick Start:</p>
+          <p>To use, follow the below steps:
+            <ol>
+              <li>Select the name of the Sagemaker Endpoint in the 'Enter Endpoint' field.</li>
+              <ul>
+                <li>The Sagemaker endpoints in the selected region will be displayed, if none available then check the region has ‘InService’ Endpoints to consume.</li>
+              </ul>
+              <li>Enter the Class labels used when training the model into the 'Inference Class List' by clicking 'Add
+                Class' and typing in the ordered class list:</li>
+              <ul>
+                <li>This step is optional and is only used for labelling.</li>
+                <li>If you don't know the class labels you can run the inference once and assign classes that make sense
+                  for proceeding runs.</li>
+              </ul>
+              <li>Select the local image to process against the Inference Endpoint form the 'Select Inference Image'
+                field.</li>
+              <li>Select the initial desired Confidence Threshold for inference:</li>
+              <ul>
+                <li>This can be updated without reprocessing the inference so don't worry to much about the initial
+                  value.</li>
+              </ul>
+              <li>Finally, Click 'Submit':</li>
+              <ul>
+                <li>At this point the image will be sent to the Amazon Sagemaker Endpoint for Inference.</li>
+                <li>The return will be processed. All identified objects will be displayed in the Inference Display
+                  readout below the image</li>
+                <li>Only identified objects that have a confidence above the Confidence Threshold will be box bounded
+                  in the image.</li>
+              </ul>
+              <li>Once the inference has been processed, you can adjust the Confidence Threshold slider to see where the
+                specific detection becomes accepted.</li>
+            </ol>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Copyright Section -->
+  <section class="copyright py-4 text-center text-white">
+    <div class="container">
+      <small>Copyright &copy; Amazon Web Services 2020</small>
+    </div>
+  </section>
+
+  <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+  <div class="scroll-to-top d-lg-none position-fixed ">
+    <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+
+  <!-- Bootstrap core / JQuery JavaScript   -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <!-- Plugin JavaScript  -->  
+  <script src="  https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="vendor/startbootstrap-freelancer/scripts.js"></script>
+
+  <!-- Custom scripts for Sagemaker Inference -->
+  <script src="main.bundle.js"></script>
+
+</body>
+
+</html>
