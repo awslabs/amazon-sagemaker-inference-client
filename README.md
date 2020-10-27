@@ -6,9 +6,9 @@ A hosted instance of this application stack can be seen at: [aws-inference-clien
 
 Amazon SageMaker is a fully managed service that removes the heavy lifting from each step of the machine learning process to make it easier to develop and train high quality machine learning models. This is especially attractive to developers that want to incorporate machine learning outcomes onto their applications without having to build and managed every step of the process.
 
-Once trained, the machine learning model needs to be hosted and exposed in a way that makes it accessible to client applications. A common way to do this is via an Amazon Sagemaker Endpoint which is a service optimised to hosts machine learning models and presents an authenticated public interface that can be consumed by end user applications.
+Once trained, the machine learning model needs to be hosted and exposed in a way that makes it accessible to client applications. A common way to do this is via an Amazon Sagemaker Endpoint which is an AWS service optimised to hosts machine learning models and presents an authenticated public interface that can be consumed by end user applications.
 
-The application code presented in this repository consists of a native JavaScript (Bootstrap4) web client and a NodeJS AWS Lambda and Amazon API Gateway configuration. This provides an end to end example of how to perform an object detection inference against an Amazon Sagemaker Endpoint. The web client in this example overlays visual bounding boxes and text output of a user provided image submitted against the Amazon Sagemaker Endpoint as displayed above.
+The application code presented in this repository consists of a native JavaScript web client and a NodeJS AWS Lambda and Amazon API Gateway configuration. This provides an end to end example of how to perform an object detection inference against an Amazon Sagemaker Endpoint. The web client in this example overlays visual bounding boxes and text output of a user provided image submitted against the Amazon Sagemaker Endpoint as displayed above.
 
 You are free to deploy in any AWS region supporting all of the listed services but when first creating the hosting resources it can take a few of hours for DNS to propagate and your application to become available if not deployed in **US-EAST-1**. For this reason, we will deploy in **US-EAST-1** and encourage you to do the same.
 
@@ -28,100 +28,9 @@ Amazon Sagemaker Endpoints present an authenticated interface to the Internet so
 The remaining sections will deploy the resources and architecture to host an Amazon Sagemaker Endpoint and the Inference Client Application using the AWS CLI. If not already configured, you will need to create the AWS CLI credentials and configuration file to allow CLI and programmatic access. Follow the procedure [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) if required. Be sure to specify the region you intend to use during the process.
 
 ## Hosting an Object Detection Model Endpoint
+The inference client web application submits images for inference against a Amazon Sagemaker Endpoint. Its assumed you have an Endpoint configured for this purpose. If not, follow the guide provided in the [Deploy An Sagemaker Endpoint](deploy-sagemaker-endpoint/) section.
 
-Before we can deploy the inference client application, we need an object detection model hosted on an Amazon Sagemaker Endpoint to make API calls against to perform the inference. This is a two-part process of first defining the model object in Amazon Sagemaker and then hosting it on an Amazon Sagemaker Endpoint.
-
-For this example we will use the model available at: [aws-vehicle-rear-detect-2020-05-09-model.tar.gz](https://static.dcolcott.com/sagemaker-vehicle-object-detect-lab/aws-vehicle-rear-detect-2020-05-09-model.tar.gz)
-
-This is a custom MXnet model built for this purpose that has been trained on a relatively small training set of 210 images to detect the rear view of various cars / vehicles. If you have your own supported object detection model you are welcome to use that instead.
-
-### Deploying the Amazon Sagemaker Model
-
-In Amazon Sagemaker a Model object consists of the ML model itself and a container with the logic required to perform the inference. You are welcome to use your own custom containers but for convenience AWS also provide these for each of the supported ML frameworks. 
-
-#### Save ML object detection model to S3  
-Download the object-detection ML model provided above (or have your own available) and upload to S3 in the AWS region you intended to deploy the inference client application.
-
-Follow this guide on how to [Create and Amazon S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-configure-bucket.html) if you don't already have one in the specific AWS region.
-
-#### Identify the Inference Container  
-AWS provide an Inference Image Registry Path for each supported region. You can find the registry path for your chosen region the *Algorithms: BlazingText, Image Classification, Object Detection* table shown at [AWS Inference Image Registry Path](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html)
-
-In this example we will be deploying to **US-EAST-1** so will be using the registry path:  
-**811284229777.dkr.ecr.us-east-1.amazonaws.com**  
-
-Find the corresponding registry path for your region in the Inference Image Registry Path table referenced above.
-
-Finally, we request the specific container that performs inference on object-detection models by adding the container name (object-detection) and a tag to specify we want to use the latest released as below:  
-**811284229777.dkr.ecr.us-east-1.amazonaws.com/object-detection:latest**  
-
-If deploying in ap-southeast-2 then you will need to update the Image Registry Path as the below example:  
-**544295431143.dkr.ecr.ap-southeast-2.amazonaws.com/object-detection:latest**   
-
-And as a final example if doing the same in eu-central-1 the container would be:
-**813361260812.dkr.ecr.eu-central-1.amazonaws.com/object-detection:latest**  
-
-#### Create the Amazon Sagemaker model object
-
-Its assumed at this point you have the reference to the inference container in your region. You will also need the ARN of an Amazon Sagemaker Execution Role that has the AmazonSageMakerFullAccess IAM policy attached and finally the path to the object detection model in S3. 
-
-With all of these you can create the Amazon Sagemaker Model object with the below commands:
-
-```
-# Enter name that will be given to the Amazon Sagemaker Model Object
-MODEL_NAME=aws-vehicle-rear-detect-2020-05-09
-
-# Enter the model inference container reference
-MODEL_CONTAINER=811284229777.dkr.ecr.us-east-1.amazonaws.com/object-detection:latest
-
-# Enter the supported Object Detection ML Model S3 URL
-MODEL_S3_URI=s3://my-s3-bucket/aws-vehicle-rear-detect-2020-05-09-model.tar.gz
-
-# Enter ARN for Amazon Sagemaker Execution Role with AmazonSageMakerFullAccess IAM policy attached 
-SM_EXE_ROLE_ARN=arn:aws:iam::123456789012:role/service-role/AmazonSageMaker-ExecutionRole
-
-# Create the Amazon Sagemaker Model
-aws sagemaker create-model \
---model-name $MODEL_NAME \
---primary-container "Image=$MODEL_CONTAINER, ModelDataUrl=$MODEL_S3_URI" \
---execution-role-arn $SM_EXE_ROLE_ARN
-```
-
-You can now go to the Amazon Sagemaker console and see the Amazon Sagemaker Model has been created.
-
-### Deploy an Amazon Sagemaker Endpoint  
-To create the Amazon Sagemaker Endpoint, you first need to create the Endpoint configuration.
-
-#### Create the Amazon Sagemaker Endpoint Config  
- Execute the below to create the Amazon Sagemaker Endpoint Config. Verify in the Amazon Sagemaker console that the configuration was successfully deployed.
-
-```
-# Enter the Sagemaker Endpoint Config Name to use
-EPC_NAME=epc-inference-client-application
-
-# Create the Amazon Sagemaker Endpoint configuration object.
-# Note:  Adjust the Model Name, Instance Count and Instance type as needed. 
-aws sagemaker create-endpoint-config \
---endpoint-config-name $EPC_NAME \
---production-variants '[{"VariantName":"variant-1", "ModelName":"aws-vehicle-rear-detect-2020-05-09", "InitialInstanceCount": 1, "InstanceType":"ml.m4.xlarge"}]'
-```
-
-#### Deploy the Amazon Sagemaker Endpoint
-And now finally deploy the Amazon Sagemaker Endpoint with the below commands:
-
-```
-# Enter the Sagemaker Endpoint Name to use
-EP_NAME=ep-inference-client-application
-
-# Enter the Sagemaker Endpoint Config Name that will be applied (assumes is as created above)
-EPC_NAME=epc-inference-client-application
-
-aws sagemaker create-endpoint \
---endpoint-name $EP_NAME \
---endpoint-config-name $EPC_NAME
-```
-
-The Amazon Sagemaker Endpoint will now be deployed, this can take a number of minutes to complete. Look in the Amazon Sagemaker console and verify the Endpoint is being initialized. 
+For programmatic deployment of an Amazon Sagemaker Endpoint see this [public guide](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html)
 
 ## Deploying the Inference Client Application.
 Deploying the application stack described using AWS Amplify is just a few simple commands but does assume you have access to an AWS environment. 
@@ -283,4 +192,3 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
-
