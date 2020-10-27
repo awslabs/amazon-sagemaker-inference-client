@@ -21,7 +21,7 @@ The application architecture is shown in the following diagram:
 
 While provided as a code example, this application has also proven to be a useful tool to quickly visualize and validate when developing and optimising Amazon Sagemaker object detection models. Being able to see the result of your object detection model in a simulation of a real client application encourages the developer to press on with the work of experimenting with machine learning model development.
 
-## AWS Lambda role-based permissions.
+## AWS Lambda Role-Based Permissions.
 Amazon Sagemaker Endpoints present an authenticated interface to the Internet so it’s reasonable to ask why we need to route the inference request via the Amazon API Gateway and the AWS Lambda. The reason in this example is so we can use AWS IAM role-based permissions to allow the Lambda to invoke the Sagemaker Endpoint without the need for the end-user to authenticate themselves in the web client. In this case, an unauthenticated request is received by the Lambda which by virtue of the sagemaker:invokeEndpoint role-based permission is able to forward the request to the Sagemaker Endpoint. This architecture should be considered in secure environments. 
 
 ## AWS Command Line Interface (CLI)
@@ -30,7 +30,7 @@ The remaining sections will deploy the resources and architecture to host an Ama
 ## Hosting an Object Detection Model Endpoint
 The inference client web application submits images for inference against a Amazon Sagemaker Endpoint. Its assumed you have an Endpoint configured for this purpose. If not, follow the guide provided in the [Deploy An Sagemaker Endpoint](deploy-sagemaker-endpoint/) section.
 
-For programmatic deployment of an Amazon Sagemaker Endpoint see this [public guide](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html)
+For programmatic deployment of an Amazon Sagemaker Endpoint see this [public guide](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html).
 
 ## Deploying the Inference Client Application.
 Deploying the application stack described using AWS Amplify is just a few simple commands but does assume you have access to an AWS environment. 
@@ -177,9 +177,9 @@ On completion of the above sections, the web client will be hosted at an Amazon 
 1. **Inference Labels:** Add the inference labels / classes that the model was trained on, these are just for display. 
   * In the example model add four classes: **car, van, ute, truck**  
 1. Select an image to send for inference by clicking the **Browse** button and
-1. Click **Submit** to send the image for inference against the Amazon Sagemaker Endpoint
+1. Click **Submit** to send the image for inference against the Amazon Sagemaker Endpoint.
 
-We selected an image consisting of a busy traffic scene that was found on the Internet (and not in the training image dataset) and got the below result:
+We selected an image consisting of a busy traffic scene that was not in the training image dataset and got the below result:
 
 ![Application Example Use Screen Shot](images/app-car-inference-client.png)
 
