@@ -3,6 +3,13 @@ const fsp = require("promise-fs");
 
 function sagemakerController() {
 
+  /**
+   * Accepts an image as base64 and posts it to the selected Amazon Sagemaker Endpoint for inference. 
+   * Response object includes a response var with predictions including class type, confidence and location image. 
+   * 
+   * @param {*} req 
+   * @param {*} res 
+   */
   async function postInference(req, res) {
 
     let response = {};
@@ -85,6 +92,13 @@ function sagemakerController() {
     }
   }
 
+  /**
+   * Requests againt the Amazon Sagamaker API to get a list of InService Endpoints that an image can be 
+   * sent for inference. Assumes the Endpoints have an object-detection model loaded.
+   * 
+   * @param {*} req 
+   * @param {*} res 
+   */
   async function postEndpoints(req, res) {
 
     let response = {};
@@ -115,14 +129,12 @@ function sagemakerController() {
         StatusEquals: "InService"
       };
       
-      // Send the image to Sagemaker endpoint for inference and parse result.
+      // Make the requst to Sagemaker API and parse result.
       let data = await sagemaker.listEndpoints(params).promise();
       console.log(data);
-      //let result = String.fromCharCode.apply(null, data.Body);
-      //let endpoints = JSON.parse(data);
       let endpoints = data.Endpoints;
 
-      // Build the success response object with inference predictions.
+      // Build the success response object with Sagemaker Endpoints meeting the Status='InService' filter.
       response.status = 'success';
       response.statusCode = 200;
       response.result = endpoints;
