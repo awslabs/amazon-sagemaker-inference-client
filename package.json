@@ -15,7 +15,7 @@
   "dependencies": {
     "@aws-amplify/api": "latest",
     "@aws-amplify/pubsub": "latest",
-    "aws-amplify": "^2.2.0",
+    "aws-amplify": "^3.3.14",
     "aws-serverless-express": "^3.3.6",
     "bootstrap": "^4.5.2",
     "jquery": "^3.5.1",
