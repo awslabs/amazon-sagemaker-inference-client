@@ -1,0 +1,2 @@
+/* Placeholder to allow app.js to buiuld in first instance. 
+AWS Amplify will automatically populate this file on amplify init */
