@@ -13,20 +13,18 @@
     "url": "https://github.com/aws-samples/amazon-sagemaker-inference-client.git"
   },
   "dependencies": {
-    "@aws-amplify/api": "latest",
-    "@aws-amplify/pubsub": "latest",
-    "aws-amplify": "^3.3.14",
-    "aws-serverless-express": "^3.3.6",
+    "@aws-amplify/api": "^4.0.37",
+    "aws-amplify": "^4.3.19",
     "bootstrap": "^4.5.2",
     "jquery": "^3.5.1",
     "jquery-easing": "0.0.1",
     "startbootstrap-freelancer": "^6.0.4"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.2.0",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "copy-webpack-plugin": "^10.2.4",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.8.1"
   },
   "keywords": [
     "Amazon",

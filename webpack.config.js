@@ -18,9 +18,7 @@ module.exports = {
         ]
     },
     devServer: {
-        contentBase: './dist',
-        overlay: true,
-        hot: true
+        hot: "only"
     },
     plugins: [
         new CopyWebpackPlugin({
