@@ -13,8 +13,8 @@
     "url": "https://github.com/aws-samples/amazon-sagemaker-inference-client.git"
   },
   "dependencies": {
-    "@aws-amplify/api": "^4.0.37",
-    "aws-amplify": "^5.3.10",
+    "@aws-amplify/api": "^6.0.17",
+    "aws-amplify": "^5.3.16",
     "bootstrap": "^4.5.2",
     "jquery": "^3.5.1",
     "jquery-easing": "0.0.1",
